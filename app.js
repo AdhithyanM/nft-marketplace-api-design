@@ -5,24 +5,11 @@ const { log } = require("console");
 const app = express();
 app.use(express.json());
 
-// app.get("/", (req, res) => {
-//   res.status(200).json({
-//     message: "Hello from nft-marketplace backend API",
-//   });
-// });
-
-// app.post("/", (req, res) => {
-//   res.status(201).json({
-//     message: "Your data",
-//   });
-// });
-
-// GET REQUEST
 const nfts = JSON.parse(
   fs.readFileSync(`${__dirname}/nft-data/data/nft-simple.json`)
 );
-
-app.get("/api/v1/nfts", (req, res) => {
+// GET REQUEST
+const getAllNfts = (req, res) => {
   res.status(200).json({
     status: "success",
     data: {
@@ -30,12 +17,9 @@ app.get("/api/v1/nfts", (req, res) => {
       total: nfts.length,
     },
   });
-});
-
+};
 // POST METHOD
-app.post("/api/v1/nfts", (req, res) => {
-  // console.log(req.body);
-
+const createNFT = (req, res) => {
   const newId = nfts[nfts.length - 1].id + 1;
   const newNFT = Object.assign({ id: newId }, req.body);
 
@@ -52,10 +36,9 @@ app.post("/api/v1/nfts", (req, res) => {
       });
     }
   );
-});
-
+};
 // GET SINGLE NFT
-app.get("/api/v1/nfts/:id", (req, res) => {
+const getSingleNft = (req, res) => {
   const id = req.params.id * 1;
   const nft = nfts.find((el) => el.id === id);
 
@@ -66,18 +49,15 @@ app.get("/api/v1/nfts/:id", (req, res) => {
     });
   }
 
-  console.log(nft);
-
   res.status(200).json({
     status: "success",
     data: {
       nft: nft,
     },
   });
-});
-
+};
 // PATCH METHOD
-app.patch("/api/v1/nfts/:id", (req, res) => {
+const updateNft = (req, res) => {
   const id = req.params.id * 1;
   const nft = nfts.find((el) => el.id === id);
 
@@ -95,10 +75,9 @@ app.patch("/api/v1/nfts/:id", (req, res) => {
       nft: nft,
     },
   });
-});
-
+};
 // DELETE METHOD
-app.delete("/api/v1/nfts/:id", (req, res) => {
+const deleteNFT = (req, res) => {
   const id = req.params.id * 1;
   const nft = nfts.find((el) => el.id === id);
 
@@ -113,7 +92,28 @@ app.delete("/api/v1/nfts/:id", (req, res) => {
     status: "success",
     message: "NFT deleted successfully",
   });
-});
+};
+
+/**
+ * Refactor - 1
+ * Keep separate controller functions for each route.
+ */
+// app.get("/api/v1/nfts", getAllNfts);
+// app.get("/api/v1/nfts/:id", getSingleNft);
+// app.post("/api/v1/nfts", createNFT);
+// app.patch("/api/v1/nfts/:id", updateNft);
+// app.delete("/api/v1/nfts/:id", deleteNFT);
+
+/**
+ * Refactor - 2
+ * Use route method and functions chaining
+ */
+app.route("/api/v1/nfts").get(getAllNfts).post(createNFT);
+app
+  .route("/api/v1/nfts/:id")
+  .get(getSingleNft)
+  .patch(updateNft)
+  .delete(deleteNFT);
 
 const port = 3000;
 app.listen(port, () => {
