@@ -1,15 +1,29 @@
 const fs = require("fs");
 const express = require("express");
 const { log } = require("console");
+const morgan = require("morgan");
 
 const app = express();
 app.use(express.json());
+app.use(morgan("dev"));
+
+// CUSTOM MIDDLEWARE
+app.use((req, res, next) => {
+  console.log("Middlware called");
+  next();
+});
+
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
 
 const nfts = JSON.parse(
   fs.readFileSync(`${__dirname}/nft-data/data/nft-simple.json`)
 );
 // GET REQUEST
 const getAllNfts = (req, res) => {
+  console.log(req.requestTime);
   res.status(200).json({
     status: "success",
     data: {
