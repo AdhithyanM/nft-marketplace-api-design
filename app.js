@@ -18,6 +18,7 @@ app.use((req, res, next) => {
   next();
 });
 
+//--------NFTs
 const nfts = JSON.parse(
   fs.readFileSync(`${__dirname}/nft-data/data/nft-simple.json`)
 );
@@ -107,6 +108,37 @@ const deleteNFT = (req, res) => {
     message: "NFT deleted successfully",
   });
 };
+//--------USERS
+const getAllUsers = (req, res) => {
+  res.status(500).json({
+    status: "error",
+    message: "Internal server error",
+  });
+};
+const getSingleUser = (req, res) => {
+  res.status(500).json({
+    status: "error",
+    message: "Internal server error",
+  });
+};
+const createUser = (req, res) => {
+  res.status(500).json({
+    status: "error",
+    message: "Internal server error",
+  });
+};
+const updateUser = (req, res) => {
+  res.status(500).json({
+    status: "error",
+    message: "Internal server error",
+  });
+};
+const deleteUser = (req, res) => {
+  res.status(500).json({
+    status: "error",
+    message: "Internal server error",
+  });
+};
 
 /**
  * Refactor - 1
@@ -128,6 +160,13 @@ app
   .get(getSingleNft)
   .patch(updateNft)
   .delete(deleteNFT);
+
+app.route("/api/v1/users").get(getAllUsers).post(createUser);
+app
+  .route("/api/v1/users/:id")
+  .get(getSingleUser)
+  .patch(updateUser)
+  .delete(deleteUser);
 
 const port = 3000;
 app.listen(port, () => {
