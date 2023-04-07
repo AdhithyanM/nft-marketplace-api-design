@@ -2,10 +2,10 @@
   "name": "nft-marketplace-api-design",
   "version": "1.0.0",
   "description": "Backend Server which provides API for the NFT-Marketplace. It interacts with the frontend and smart contract.",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon app.js"
+    "dev": "nodemon server.js"
   },
   "repository": {
     "type": "git",
