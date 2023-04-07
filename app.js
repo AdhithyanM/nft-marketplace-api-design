@@ -7,22 +7,10 @@ const app = express();
 app.use(express.json());
 app.use(morgan("dev"));
 
-// CUSTOM MIDDLEWARE
-app.use((req, res, next) => {
-  console.log("Middlware called");
-  next();
-});
-
-app.use((req, res, next) => {
-  req.requestTime = new Date().toISOString();
-  next();
-});
-
 //--------NFTs
 const nfts = JSON.parse(
   fs.readFileSync(`${__dirname}/nft-data/data/nft-simple.json`)
 );
-// GET REQUEST
 const getAllNfts = (req, res) => {
   console.log(req.requestTime);
   res.status(200).json({
@@ -33,7 +21,6 @@ const getAllNfts = (req, res) => {
     },
   });
 };
-// POST METHOD
 const createNFT = (req, res) => {
   const newId = nfts[nfts.length - 1].id + 1;
   const newNFT = Object.assign({ id: newId }, req.body);
@@ -52,7 +39,6 @@ const createNFT = (req, res) => {
     }
   );
 };
-// GET SINGLE NFT
 const getSingleNft = (req, res) => {
   const id = req.params.id * 1;
   const nft = nfts.find((el) => el.id === id);
@@ -71,7 +57,6 @@ const getSingleNft = (req, res) => {
     },
   });
 };
-// PATCH METHOD
 const updateNft = (req, res) => {
   const id = req.params.id * 1;
   const nft = nfts.find((el) => el.id === id);
@@ -91,7 +76,6 @@ const updateNft = (req, res) => {
     },
   });
 };
-// DELETE METHOD
 const deleteNFT = (req, res) => {
   const id = req.params.id * 1;
   const nft = nfts.find((el) => el.id === id);
@@ -140,33 +124,21 @@ const deleteUser = (req, res) => {
   });
 };
 
-/**
- * Refactor - 1
- * Keep separate controller functions for each route.
- */
-// app.get("/api/v1/nfts", getAllNfts);
-// app.get("/api/v1/nfts/:id", getSingleNft);
-// app.post("/api/v1/nfts", createNFT);
-// app.patch("/api/v1/nfts/:id", updateNft);
-// app.delete("/api/v1/nfts/:id", deleteNFT);
+const nftsRouter = express.Router();
+const usersRouter = express.Router();
 
-/**
- * Refactor - 2
- * Use route method and functions chaining
- */
-app.route("/api/v1/nfts").get(getAllNfts).post(createNFT);
-app
-  .route("/api/v1/nfts/:id")
-  .get(getSingleNft)
-  .patch(updateNft)
-  .delete(deleteNFT);
+nftsRouter.route("/").get(getAllNfts).post(createNFT);
+nftsRouter.route("/:id").get(getSingleNft).patch(updateNft).delete(deleteNFT);
 
-app.route("/api/v1/users").get(getAllUsers).post(createUser);
-app
-  .route("/api/v1/users/:id")
+usersRouter.route("/").get(getAllUsers).post(createUser);
+usersRouter
+  .route("/:id")
   .get(getSingleUser)
   .patch(updateUser)
   .delete(deleteUser);
+
+app.use("/api/v1/nfts", nftsRouter);
+app.use("/api/v1/users", usersRouter);
 
 const port = 3000;
 app.listen(port, () => {
