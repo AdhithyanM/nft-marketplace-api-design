@@ -9,6 +9,9 @@ const app = express();
 app.use(express.json());
 app.use(morgan("dev"));
 
+// SERVING TEMPLATE DEMO
+app.use(express.static(`${__dirname}/nft-data/img`));
+
 app.use("/api/v1/nfts", nftsRouter);
 app.use("/api/v1/users", usersRouter);
 
