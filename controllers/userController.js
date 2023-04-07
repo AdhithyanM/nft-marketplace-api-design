@@ -4,13 +4,13 @@ const getAllUsers = (req, res) => {
     message: "Internal server error",
   });
 };
-const getSingleUser = (req, res) => {
+const createUser = (req, res) => {
   res.status(500).json({
     status: "error",
     message: "Internal server error",
   });
 };
-const createUser = (req, res) => {
+const getSingleUser = (req, res) => {
   res.status(500).json({
     status: "error",
     message: "Internal server error",
