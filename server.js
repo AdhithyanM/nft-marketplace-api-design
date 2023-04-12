@@ -2,7 +2,7 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const app = require("./app");
 
-dotenv.config({ path: "./config/config.env" });
+dotenv.config();
 
 const DB_URI = process.env.DATABASE_URI.replace(
   "<PASSWORD>",

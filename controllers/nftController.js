@@ -1,4 +1,4 @@
-const NFT = require("../models/nft");
+const NFT = require("../models/nftModel");
 
 const getAllNfts = async (req, res) => {
   try {
