@@ -1,89 +1,98 @@
-const fs = require("fs");
+const NFT = require("../models/nft");
 
-const nfts = JSON.parse(
-  fs.readFileSync(`${__dirname}/../nft-data/data/nft-simple.json`)
-);
+const getAllNfts = async (req, res) => {
+  try {
+    const nfts = await NFT.find();
 
-const checkId =
-  ("id",
-  (req, res, next, value) => {
-    const id = value * 1;
-    const nft = nfts.find((el) => el.id === id);
-
-    if (!nft) {
-      return res.status(404).json({
-        status: "failed",
-        message: "NFT not found",
-      });
-    }
-    next();
-  });
-
-const checkBody = (req, res, next) => {
-  if (!req.body.name || !req.body.price) {
-    return res.status(400).json({
+    res.status(200).json({
+      status: "success",
+      data: {
+        entities: nfts,
+        total: nfts.length,
+      },
+    });
+  } catch (error) {
+    res.status(404).json({
       status: "failed",
-      message: "Missing name or price",
+      message: error,
     });
   }
-  next();
 };
 
-const getAllNfts = (req, res) => {
-  console.log(req.requestTime);
-  res.status(200).json({
-    status: "success",
-    data: {
-      entities: nfts,
-      total: nfts.length,
-    },
-  });
-};
-const getSingleNft = (req, res) => {
-  res.status(200).json({
-    status: "success",
-    data: {
-      nft: nft,
-    },
-  });
-};
-const createNFT = (req, res) => {
-  const newId = nfts[nfts.length - 1].id + 1;
-  const newNFT = Object.assign({ id: newId }, req.body);
+const getSingleNft = async (req, res) => {
+  try {
+    const nft = await NFT.findById(req.params.id);
 
-  nfts.push(newNFT);
+    res.status(200).json({
+      status: "success",
+      data: {
+        nft: nft,
+      },
+    });
+  } catch (error) {
+    res.status(404).json({
+      status: "failed",
+      message: error,
+    });
+  }
+};
 
-  return fs.writeFile(
-    `${__dirname}/nft-data/data/nft-simple.json`,
-    JSON.stringify(nfts),
-    (err) => {
-      res.status(201).json({
-        status: "success",
-        message: "NFT created successfully",
-        data: newNFT,
-      });
-    }
-  );
+const createNFT = async (req, res) => {
+  try {
+    const newNFT = await NFT.create(req.body);
+
+    res.status(201).json({
+      status: "success",
+      data: {
+        nft: newNFT,
+      },
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "failed",
+      message: error,
+    });
+  }
 };
-const updateNft = (req, res) => {
-  res.status(200).json({
-    status: "success",
-    message: "NFT updated successfully",
-    data: {
-      nft: nft,
-    },
-  });
+
+const updateNft = async (req, res) => {
+  try {
+    const nft = await NFT.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        nft: nft,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "failed",
+      message: error,
+    });
+  }
 };
-const deleteNFT = (req, res) => {
-  res.status(200).json({
-    status: "success",
-    message: "NFT deleted successfully",
-  });
+
+const deleteNFT = async (req, res) => {
+  try {
+    await NFT.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({
+      status: "success",
+      message: "NFT deleted successfully",
+    });
+  } catch (error) {
+    res.status(404).json({
+      status: "failed",
+      message: error,
+    });
+  }
 };
 
 const nftController = Object.freeze({
-  checkId,
-  checkBody,
   getAllNfts,
   getSingleNft,
   createNFT,

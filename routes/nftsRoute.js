@@ -5,12 +5,7 @@ const nftController = require("../controllers/nftController");
 
 const router = express.Router();
 
-router.param("id", nftController.checkId);
-
-router
-  .route("/")
-  .get(nftController.getAllNfts)
-  .post(nftController.checkBody, nftController.createNFT); // 1st it will run checkBody and then createNFT
+router.route("/").get(nftController.getAllNfts).post(nftController.createNFT); // 1st it will run checkBody and then createNFT
 router
   .route("/:id")
   .get(nftController.getSingleNft)
